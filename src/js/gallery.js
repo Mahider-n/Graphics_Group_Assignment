@@ -33,12 +33,13 @@ export function initGallery() {
     
     // Camera
     camera = new THREE.PerspectiveCamera(
-      75, 
+      60, 
       window.innerWidth / window.innerHeight, 
       0.1, 
       1000
     );
     camera.position.set(0, 1.6, 5);
+    camera.lookAt(0, 1.6, -10);
     
     // Renderer
     renderer = new THREE.WebGLRenderer({ 
@@ -56,6 +57,9 @@ export function initGallery() {
     // Controls
     setupOrbitControls(camera, renderer.domElement);
     setupPointerLockControls(camera, renderer.domElement);
+    
+    orbitControls.target.set(0, 1.6, -10);
+    orbitControls.update();
     
     // Gallery structure
     createGalleryStructure();
