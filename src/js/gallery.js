@@ -1,0 +1,297 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { setupLights, updateMovingLights } from './lights.js';
+import { setupOrbitControls, setupPointerLockControls, activeControl, orbitControls } from './controls.js';
+import { initPostProcessing } from './postprocessing.js';
+import { setupRaycaster } from './interactions.js';
+import { Artwork } from './classes/Artwork.js';
+import { Pedestal } from './classes/Pedestal.js';
+
+// Global variables
+let scene, camera, renderer, composer;
+let artworks = [];
+let clock = new THREE.Clock();
+let loadingManager;
+const textureLoader = new THREE.TextureLoader();
+const gltfLoader = new GLTFLoader();
+
+export function initGallery() {
+  // Setup loading manager
+  setupLoadingManager();
+  
+  // Scene setup
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xeeeeee);
+  scene.fog = new THREE.Fog(0xcccccc, 10, 30);
+  
+  // Camera
+  camera = new THREE.PerspectiveCamera(
+    75, 
+    window.innerWidth / window.innerHeight, 
+    0.1, 
+    1000
+  );
+  camera.position.set(0, 1.6, 5);
+  
+  // Renderer
+  renderer = new THREE.WebGLRenderer({ 
+    antialias: true,
+    alpha: true
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  document.getElementById('app').appendChild(renderer.domElement);
+  
+  // Lighting
+  setupLights(scene);
+  
+  // Controls
+  setupOrbitControls(camera, renderer.domElement);
+  setupPointerLockControls(camera, renderer.domElement);
+  
+  // Gallery structure
+  createGalleryStructure();
+  
+  // Load artworks
+  loadArtworks();
+  
+  // Post-processing
+  composer = initPostProcessing(renderer, scene, camera);
+  
+  // Event listeners
+  setupEventListeners();
+  
+  // Animation loop
+  animate();
+}
+
+function setupLoadingManager() {
+  loadingManager = new THREE.LoadingManager();
+  
+  loadingManager.onStart = () => {
+    document.getElementById('loading-screen').style.display = 'flex';
+  };
+  
+  loadingManager.onProgress = (url, loaded, total) => {
+    const progress = (loaded / total) * 100;
+    document.querySelector('.progress-bar').style.width = `${progress}%`;
+  };
+  
+  loadingManager.onLoad = () => {
+    setTimeout(() => {
+      document.getElementById('loading-screen').style.display = 'none';
+    }, 500);
+  };
+  
+  loadingManager.onError = (url) => {
+    console.error(`Error loading: ${url}`);
+  };
+  
+  textureLoader.manager = loadingManager;
+  gltfLoader.manager = loadingManager;
+}
+
+function createGalleryStructure() {
+  // Floor
+  const floorGeometry = new THREE.PlaneGeometry(30, 30);
+  const floorMaterial = new THREE.MeshStandardMaterial({ 
+    color: 0x888888,
+    roughness: 0.8,
+    metalness: 0.2
+  });
+  const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  scene.add(floor);
+  
+  // Walls
+  const wallMaterial = new THREE.MeshStandardMaterial({ 
+    color: 0xf0f0f0,
+    roughness: 0.7,
+    metalness: 0.1
+  });
+  
+  const wallPositions = [
+    [0, 5, -15, 0],         // Back wall
+    [-15, 5, 0, Math.PI/2], // Left wall
+    [15, 5, 0, Math.PI/2],  // Right wall
+  ];
+  
+  wallPositions.forEach(pos => {
+    const wall = new THREE.Mesh(
+      new THREE.BoxGeometry(30, 10, 0.2),
+      wallMaterial
+    );
+    wall.position.set(pos[0], pos[1], pos[2]);
+    wall.rotation.y = pos[3];
+    wall.castShadow = true;
+    wall.receiveShadow = true;
+    scene.add(wall);
+  });
+  
+  // Ceiling
+  const ceiling = new THREE.Mesh(
+    new THREE.PlaneGeometry(30, 30),
+    new THREE.MeshStandardMaterial({ color: 0xdddddd })
+  );
+  ceiling.rotation.x = Math.PI / 2;
+  ceiling.position.y = 10;
+  ceiling.receiveShadow = true;
+  scene.add(ceiling);
+}
+
+async function loadArtworks() {
+  try {
+    // 2D Artworks
+    const paintings = [
+      {
+        position: new THREE.Vector3(-14, 3, -8),
+        rotation: new THREE.Euler(0, Math.PI/2, 0),
+        config: {
+          texturePath: 'assets/artworks/a1.jpg',
+          size: { width: 4, height: 3 },
+          frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 }
+        },
+        info: {
+          title: "Starry Night",
+          description: "Modern interpretation of classic landscape"
+        }
+      },
+      {
+        position: new THREE.Vector3(14, 3, -8),
+        rotation: new THREE.Euler(0, -Math.PI/2, 0),
+        config: {
+          texturePath: 'assets/artworks/a1.jpg',
+          size: { width: 3, height: 4 },
+          frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 }
+        },
+        info: {
+          title: "Abstract Thoughts",
+          description: "Expressionist oil painting from 2023"
+        }
+      }
+    ];
+    
+    for (const painting of paintings) {
+      const artwork = new Artwork('2d', painting.config);
+      artwork.mesh.position.copy(painting.position);
+      artwork.mesh.rotation.copy(painting.rotation);
+      artwork.mesh.userData = painting.info;
+      scene.add(artwork.mesh);
+      artworks.push(artwork.mesh);
+    }
+    
+    // 3D Artworks
+    const sculptures = [
+      {
+        position: new THREE.Vector3(-5, 1, -10),
+        scale: new THREE.Vector3(0.5, 0.5, 0.5),
+        modelPath: 'assets/models/misaka_mikoto_preview.glb',
+        info: {
+          title: "Modern Figure",
+          description: "Bronze sculpture by contemporary artist"
+        }
+      },
+      {
+        position: new THREE.Vector3(5, 1, -10),
+        scale: new THREE.Vector3(0.7, 0.7, 0.7),
+        modelPath: 'assets/models/mazda_vision_rs__www.vecarz.com.glb',
+        info: {
+          title: "Abstract Form",
+          description: "Marble abstract piece from 2022"
+        }
+      }
+    ];
+    
+    for (const sculpture of sculptures) {
+      const gltf = await loadModel(sculpture.modelPath);
+      const model = gltf.scene;
+      model.position.copy(sculpture.position);
+      model.scale.copy(sculpture.scale);
+      model.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      model.userData = sculpture.info;
+      scene.add(model);
+      artworks.push(model);
+      
+      // Add rotating pedestal
+      const pedestal = new Pedestal();
+      pedestal.mesh.position.copy(sculpture.position);
+      pedestal.mesh.position.y = 0.1;
+      scene.add(pedestal.mesh);
+    }
+    
+    // Setup interactions after artworks are loaded
+    setupRaycaster(camera, scene, artworks);
+    
+  } catch (error) {
+    console.error('Error loading artworks:', error);
+  }
+}
+
+async function loadModel(path) {
+  return new Promise((resolve, reject) => {
+    gltfLoader.load(path, resolve, undefined, reject);
+  });
+}
+
+function setupEventListeners() {
+  // Window resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+  });
+  
+  // Toggle controls button
+  document.getElementById('toggle-controls').addEventListener('click', () => {
+    if (activeControl === 'orbit') {
+      orbitControls.enabled = false;
+      pointerControls.lock();
+      activeControl = 'pointer';
+    } else {
+      pointerControls.unlock();
+      orbitControls.enabled = true;
+      activeControl = 'orbit';
+    }
+  });
+  
+  // Escape key to exit pointer lock
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && activeControl === 'pointer') {
+      pointerControls.unlock();
+      orbitControls.enabled = true;
+      activeControl = 'orbit';
+    }
+  });
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  
+  const delta = clock.getDelta();
+  
+  // Update controls
+  if (activeControl === 'orbit' && orbitControls) {
+    orbitControls.update();
+  }
+  
+  // Rotate pedestals
+  scene.traverse(obj => {
+    if (obj.userData && obj.userData.type === 'pedestal') {
+      obj.rotation.y += delta * 0.5;
+    }
+  });
+  
+  // Update moving lights
+  updateMovingLights(scene, delta);
+  
+  // Render with post-processing
+  composer.render();
+}
