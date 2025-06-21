@@ -1,69 +1,84 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { setupLights, updateMovingLights } from './lights.js';
-import { setupOrbitControls, setupPointerLockControls, activeControl, orbitControls } from './controls.js';
+import { 
+  setupOrbitControls, 
+  setupPointerLockControls, 
+  toggleControls,
+  activeControl,
+  orbitControls,
+  pointerControls
+} from './controls.js';
 import { initPostProcessing } from './postprocessing.js';
 import { setupRaycaster } from './interactions.js';
 import { Artwork } from './classes/Artwork.js';
 import { Pedestal } from './classes/Pedestal.js';
+import { loadModel, textureLoader, gltfLoader } from './utils/loaders.js';
 
 // Global variables
 let scene, camera, renderer, composer;
 let artworks = [];
 let clock = new THREE.Clock();
 let loadingManager;
-const textureLoader = new THREE.TextureLoader();
-const gltfLoader = new GLTFLoader();
 
 export function initGallery() {
-  // Setup loading manager
-  setupLoadingManager();
-  
-  // Scene setup
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xeeeeee);
-  scene.fog = new THREE.Fog(0xcccccc, 10, 30);
-  
-  // Camera
-  camera = new THREE.PerspectiveCamera(
-    75, 
-    window.innerWidth / window.innerHeight, 
-    0.1, 
-    1000
-  );
-  camera.position.set(0, 1.6, 5);
-  
-  // Renderer
-  renderer = new THREE.WebGLRenderer({ 
-    antialias: true,
-    alpha: true
-  });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  document.getElementById('app').appendChild(renderer.domElement);
-  
-  // Lighting
-  setupLights(scene);
-  
-  // Controls
-  setupOrbitControls(camera, renderer.domElement);
-  setupPointerLockControls(camera, renderer.domElement);
-  
-  // Gallery structure
-  createGalleryStructure();
-  
-  // Load artworks
-  loadArtworks();
-  
-  // Post-processing
-  composer = initPostProcessing(renderer, scene, camera);
-  
-  // Event listeners
-  setupEventListeners();
-  
-  // Animation loop
-  animate();
+  try {
+    // Setup loading manager
+    setupLoadingManager();
+    
+    // Scene setup
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xeeeeee);
+    scene.fog = new THREE.Fog(0xcccccc, 10, 30);
+    
+    // Camera
+    camera = new THREE.PerspectiveCamera(
+      75, 
+      window.innerWidth / window.innerHeight, 
+      0.1, 
+      1000
+    );
+    camera.position.set(0, 1.6, 5);
+    
+    // Renderer
+    renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      alpha: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.getElementById('app').appendChild(renderer.domElement);
+    
+    // Lighting
+    setupLights(scene);
+    
+    // Controls
+    setupOrbitControls(camera, renderer.domElement);
+    setupPointerLockControls(camera, renderer.domElement);
+    
+    // Gallery structure
+    createGalleryStructure();
+    
+    // Load artworks
+    loadArtworks();
+    
+    // Post-processing
+    composer = initPostProcessing(renderer, scene, camera);
+    
+    // Event listeners
+    setupEventListeners();
+    
+    // Animation loop
+    animate();
+  } catch (error) {
+    console.error('Gallery initialization failed:', error);
+    document.getElementById('loading-screen').innerHTML = `
+      <h1>Error Loading Gallery</h1>
+      <p>${error.message}</p>
+      <p>Check console for details</p>
+    `;
+  }
 }
 
 function setupLoadingManager() {
@@ -86,6 +101,7 @@ function setupLoadingManager() {
   
   loadingManager.onError = (url) => {
     console.error(`Error loading: ${url}`);
+    document.querySelector('.progress-bar').style.background = '#ff0000';
   };
   
   textureLoader.manager = loadingManager;
@@ -149,7 +165,7 @@ async function loadArtworks() {
         position: new THREE.Vector3(-14, 3, -8),
         rotation: new THREE.Euler(0, Math.PI/2, 0),
         config: {
-          texturePath: 'assets/artworks/a1.jpg',
+          texturePath: '/assets/artworks/a1.jpg',
           size: { width: 4, height: 3 },
           frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 }
         },
@@ -162,7 +178,7 @@ async function loadArtworks() {
         position: new THREE.Vector3(14, 3, -8),
         rotation: new THREE.Euler(0, -Math.PI/2, 0),
         config: {
-          texturePath: 'assets/artworks/a1.jpg',
+          texturePath: '/assets/artworks/a1.jpg',
           size: { width: 3, height: 4 },
           frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 }
         },
@@ -187,7 +203,7 @@ async function loadArtworks() {
       {
         position: new THREE.Vector3(-5, 1, -10),
         scale: new THREE.Vector3(0.5, 0.5, 0.5),
-        modelPath: 'assets/models/misaka_mikoto_preview.glb',
+        modelPath: '/assets/models/misaka_mikoto_preview.glb',
         info: {
           title: "Modern Figure",
           description: "Bronze sculpture by contemporary artist"
@@ -196,7 +212,7 @@ async function loadArtworks() {
       {
         position: new THREE.Vector3(5, 1, -10),
         scale: new THREE.Vector3(0.7, 0.7, 0.7),
-        modelPath: 'assets/models/mazda_vision_rs__www.vecarz.com.glb',
+        modelPath: '/assets/models/mazda_vision_rs__www.vecarz.com.glb',
         info: {
           title: "Abstract Form",
           description: "Marble abstract piece from 2022"
@@ -205,8 +221,19 @@ async function loadArtworks() {
     ];
     
     for (const sculpture of sculptures) {
-      const gltf = await loadModel(sculpture.modelPath);
-      const model = gltf.scene;
+      let model;
+      try {
+        const gltf = await loadModel(sculpture.modelPath);
+        model = gltf;
+      } catch (error) {
+        console.error(`Failed to load model: ${sculpture.modelPath}`, error);
+        // Create fallback cube
+        model = new THREE.Mesh(
+          new THREE.BoxGeometry(1, 1, 1),
+          new THREE.MeshStandardMaterial({ color: 0xff0000 })
+        );
+      }
+      
       model.position.copy(sculpture.position);
       model.scale.copy(sculpture.scale);
       model.traverse(child => {
@@ -234,33 +261,19 @@ async function loadArtworks() {
   }
 }
 
-async function loadModel(path) {
-  return new Promise((resolve, reject) => {
-    gltfLoader.load(path, resolve, undefined, reject);
-  });
-}
-
 function setupEventListeners() {
   // Window resize
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
+    if (composer) {
+      composer.setSize(window.innerWidth, window.innerHeight);
+    }
   });
   
   // Toggle controls button
-  document.getElementById('toggle-controls').addEventListener('click', () => {
-    if (activeControl === 'orbit') {
-      orbitControls.enabled = false;
-      pointerControls.lock();
-      activeControl = 'pointer';
-    } else {
-      pointerControls.unlock();
-      orbitControls.enabled = true;
-      activeControl = 'orbit';
-    }
-  });
+  document.getElementById('toggle-controls').addEventListener('click', toggleControls);
   
   // Escape key to exit pointer lock
   document.addEventListener('keydown', (e) => {
@@ -293,5 +306,9 @@ function animate() {
   updateMovingLights(scene, delta);
   
   // Render with post-processing
-  composer.render();
+  if (composer) {
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 }

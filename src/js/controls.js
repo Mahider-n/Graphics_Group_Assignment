@@ -1,13 +1,16 @@
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
-let orbitControls, pointerControls;
-let activeControl = 'orbit';
+export let orbitControls, pointerControls;
+export let activeControl = 'orbit';
 
 export function setupOrbitControls(camera, domElement) {
   orbitControls = new OrbitControls(camera, domElement);
   orbitControls.enableDamping = true;
   orbitControls.dampingFactor = 0.05;
+  orbitControls.screenSpacePanning = false;
+  orbitControls.minDistance = 3;
+  orbitControls.maxDistance = 30;
   return orbitControls;
 }
 
@@ -27,6 +30,3 @@ export function toggleControls() {
     activeControl = 'orbit';
   }
 }
-
-// Add event listener in main.js
-document.getElementById('toggle-controls').addEventListener('click', toggleControls);

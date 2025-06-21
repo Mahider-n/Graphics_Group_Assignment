@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { textureLoader } from '../utils/loaders.js'; // Add this import
 
 export class Artwork {
   constructor(type, config) {
@@ -23,7 +24,8 @@ export class Artwork {
     const geometry = new THREE.PlaneGeometry(size.width, size.height);
     const material = new THREE.MeshStandardMaterial({
       map: textureLoader.load(texturePath),
-      roughness: 0.3
+      roughness: 0.3,
+      metalness: 0.1
     });
     const painting = new THREE.Mesh(geometry, material);
     group.add(painting);

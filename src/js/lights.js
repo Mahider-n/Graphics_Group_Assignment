@@ -14,12 +14,14 @@ export function setupLights(scene) {
   scene.add(directional);
   
   // Spotlights
-  const spotlight1 = createSpotlight(0xffaa00, [-8, 8, -12]);
-  const spotlight2 = createSpotlight(0x00aaff, [8, 8, -12]);
+  const spotlight1 = createSpotlight(scene, 0xffaa00, [-8, 8, -12]);
+  const spotlight2 = createSpotlight(scene, 0x00aaff, [8, 8, -12]);
   scene.add(spotlight1, spotlight2);
+  
+  return { spotlights: [spotlight1, spotlight2] };
 }
 
-function createSpotlight(color, position) {
+function createSpotlight(scene, color, position) {
   const light = new THREE.SpotLight(color, 2, 20, Math.PI/6, 0.25);
   light.position.set(...position);
   light.castShadow = true;
@@ -31,4 +33,15 @@ function createSpotlight(color, position) {
   scene.add(light.target);
   
   return light;
+}
+
+export function updateMovingLights(scene, delta) {
+  const time = Date.now() * 0.001;
+  
+  scene.traverse(obj => {
+    if (obj.isSpotLight && obj.target) {
+      obj.target.position.x = Math.sin(time * 0.5) * 5;
+      obj.target.position.z = Math.cos(time * 0.3) * 5 - 10;
+    }
+  });
 }
