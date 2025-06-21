@@ -17,3 +17,4 @@ export async function loadTexture(path) {
     textureLoader.load(path, resolve);
   });
 }
+// export {textureLoader};
