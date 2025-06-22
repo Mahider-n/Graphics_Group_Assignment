@@ -194,7 +194,20 @@ async function loadArtworks() {
           title: "Abstract Thoughts",
           description: "Expressionist oil painting from 2023"
         }
-      }
+      },
+       {
+    position: new THREE.Vector3(-7, 3, -14),
+    rotation: new THREE.Euler(0, 0, 0),
+    config: {
+      texturePath: '/assets/artworks/a2.jpg',
+      size: { width: 5, height: 3 },
+      frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 }
+    },
+    info: {
+      title: "The Maskal Flower",
+      description: "The Maskal Flower, 1959 - Afewerk Tekle in Expressionism style."
+    }
+  }
     ];
     
     for (const painting of paintings) {
