@@ -36,35 +36,65 @@
   
 //   return composer;
 // }
+// import * as THREE from 'three';
+// import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+// import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+// import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+// import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+
+// let composer;
+
+// export function initPostProcessing(renderer, scene, camera) {
+//   composer = new EffectComposer(renderer);
+  
+//   // Render pass
+//   const renderPass = new RenderPass(scene, camera);
+//   composer.addPass(renderPass);
+  
+//   // Subtle bloom effect
+//   const bloomPass = new UnrealBloomPass(
+//     new THREE.Vector2(window.innerWidth, window.innerHeight),
+//     0.6,  // Reduced strength
+//     0.2,  // Reduced radius
+//     0.8   // Increased threshold
+//   );
+//   composer.addPass(bloomPass);
+  
+//   // Optional: SMAA for better anti-aliasing
+//   if (renderer.getPixelRatio() === 1 && renderer.capabilities.isWebGL2) {
+//     const smaaPass = new SMAAPass(window.innerWidth, window.innerHeight);
+//     composer.addPass(smaaPass);
+//   }
+  
+//   return composer;
+// }
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 let composer;
 
 export function initPostProcessing(renderer, scene, camera) {
   composer = new EffectComposer(renderer);
   
-  // Render pass
+  // 1. Basic render pass (keep this)
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
-  
-  // Subtle bloom effect
+
+  // 2. More subtle bloom with tighter radius
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.6,  // Reduced strength
-    0.2,  // Reduced radius
-    0.8   // Increased threshold
+    0.4,  // Reduced strength (was 1.5)
+    0.1,  // Smaller radius (was 0.4)
+    0.9   // Higher threshold (was 0.85)
   );
   composer.addPass(bloomPass);
-  
-  // Optional: SMAA for better anti-aliasing
-  if (renderer.getPixelRatio() === 1 && renderer.capabilities.isWebGL2) {
-    const smaaPass = new SMAAPass(window.innerWidth, window.innerHeight);
-    composer.addPass(smaaPass);
-  }
-  
+
+  // 3. Optional: Add output pass for better color handling
+  const outputPass = new OutputPass();
+  composer.addPass(outputPass);
+
   return composer;
 }
