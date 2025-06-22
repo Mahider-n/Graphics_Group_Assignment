@@ -28,7 +28,7 @@ export function initGallery() {
     // Scene setup
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xeeeeee);
-    scene.fog = new THREE.Fog(0xcccccc, 10, 30);
+    scene.fog = new THREE.Fog(0xcccccc, 15, 30);
     
     // Enhanced camera settings
     camera = new THREE.PerspectiveCamera(
@@ -53,6 +53,7 @@ export function initGallery() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.physicallyCorrectLights = true;
+    renderer.toneMapping = THREE.NoToneMapping;
     document.getElementById('app').appendChild(renderer.domElement);
     
     // Lighting
