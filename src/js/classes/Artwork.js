@@ -1,10 +1,11 @@
 import * as THREE from 'three';
-import { textureLoader } from '../utils/loaders.js'; // Add this import
+import { textureLoader } from '../utils/loaders.js';
 
 export class Artwork {
-  constructor(type, config) {
+  constructor(type, config, renderer) {
     this.type = type;
     this.config = config;
+    this.renderer = renderer;
     this.mesh = this.createMesh();
   }
 
@@ -20,14 +21,25 @@ export class Artwork {
     const { texturePath, size, frame } = this.config;
     const group = new THREE.Group();
     
-    // Painting
-    const geometry = new THREE.PlaneGeometry(size.width, size.height);
+    // Load texture with optimized settings
+    const texture = textureLoader.load(texturePath, (texture) => {
+      texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.generateMipmaps = true;
+      texture.encoding = THREE.sRGBEncoding;
+    });
+    
+    // Painting with higher quality settings
+    const geometry = new THREE.PlaneGeometry(size.width, size.height, 1, 1);
     const material = new THREE.MeshStandardMaterial({
-      map: textureLoader.load(texturePath),
+      map: texture,
       roughness: 0.3,
-      metalness: 0.1
+      metalness: 0.1,
+      side: THREE.DoubleSide
     });
     const painting = new THREE.Mesh(geometry, material);
+    painting.renderOrder = 1; // Ensure proper rendering order
     group.add(painting);
     
     // Frame
@@ -35,7 +47,8 @@ export class Artwork {
       const frameGeometry = new THREE.BoxGeometry(
         size.width + frame.thickness, 
         size.height + frame.thickness, 
-        frame.depth
+        frame.depth,
+        1, 1, 1
       );
       const frameMaterial = new THREE.MeshStandardMaterial({
         color: frame.color,
@@ -44,6 +57,7 @@ export class Artwork {
       });
       const frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
       frameMesh.position.z = -frame.depth/2 - 0.01;
+      frameMesh.renderOrder = 0;
       group.add(frameMesh);
     }
     
@@ -51,7 +65,6 @@ export class Artwork {
   }
 
   create3DArtwork() {
-    // Will be implemented in Phase 2
     return new THREE.Group();
   }
 }

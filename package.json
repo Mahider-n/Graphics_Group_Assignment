@@ -17,5 +17,18 @@
     "dat.gui": "^0.7.9",
     "three": "^0.177.0",
     "three-stdlib": "^2.36.0"
-  }
+  },
+  "main": "vite.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mahider-n/Graphics_Group_Assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mahider-n/Graphics_Group_Assignment/issues"
+  },
+  "homepage": "https://github.com/Mahider-n/Graphics_Group_Assignment#readme",
+  "description": ""
 }
