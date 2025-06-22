@@ -23,7 +23,6 @@ let loadingManager;
 
 export function initGallery() {
   try {
-    // Setup loading manager
     setupLoadingManager();
     
     // Scene setup
@@ -31,24 +30,29 @@ export function initGallery() {
     scene.background = new THREE.Color(0xeeeeee);
     scene.fog = new THREE.Fog(0xcccccc, 10, 30);
     
-    // Camera
+    // Enhanced camera settings
     camera = new THREE.PerspectiveCamera(
-      60, 
-      window.innerWidth / window.innerHeight, 
-      0.1, 
-      1000
+      50, // Reduced FOV for less distortion
+      window.innerWidth / window.innerHeight,
+      0.05, // Increased near plane
+      100 // Reduced far plane
     );
     camera.position.set(0, 1.6, 5);
     camera.lookAt(0, 1.6, -10);
     
-    // Renderer
-    renderer = new THREE.WebGLRenderer({ 
+    // Enhanced renderer settings
+    renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true
+      alpha: true,
+      powerPreference: "high-performance",
+      logarithmicDepthBuffer: true
     });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.physicallyCorrectLights = true;
     document.getElementById('app').appendChild(renderer.domElement);
     
     // Lighting
@@ -194,7 +198,7 @@ async function loadArtworks() {
     ];
     
     for (const painting of paintings) {
-      const artwork = new Artwork('2d', painting.config);
+      const artwork = new Artwork('2d', painting.config, renderer); // Pass renderer here
       artwork.mesh.position.copy(painting.position);
       artwork.mesh.rotation.copy(painting.rotation);
       artwork.mesh.userData = painting.info;
