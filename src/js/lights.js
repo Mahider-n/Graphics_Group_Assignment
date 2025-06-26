@@ -1,19 +1,18 @@
 // new one 
 
-
 import * as THREE from 'three';
 
 export function setupLights(scene) {
-  // Increased ambient light for better visibility
-  const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+  // Ambient light - slightly warmer tone
+  const ambient = new THREE.AmbientLight(0xfff4e6, 0.5);
   scene.add(ambient);
   
   // Main directional light - positioned to simulate gallery lighting
-  const directional = new THREE.DirectionalLight(0xffffff, 1.2);
-  directional.position.set(0, 15, 5); // Top-front position
+  const directional = new THREE.DirectionalLight(0xfff9f0, 1.0);
+  directional.position.set(0, 15, 5);
   directional.castShadow = true;
   
-  // Improve shadow quality
+  // Improved shadow quality
   directional.shadow.mapSize.width = 2048;
   directional.shadow.mapSize.height = 2048;
   directional.shadow.camera.near = 1;
@@ -25,28 +24,38 @@ export function setupLights(scene) {
   directional.shadow.bias = -0.001;
   scene.add(directional);
   
-  // Artwork-focused spotlights
-  const spotlight1 = createSpotlight(scene, 0xffeedd, 1.5, [-5, 8, -10]); // Left artwork
-  const spotlight2 = createSpotlight(scene, 0xffeedd, 1.5, [5, 8, -10]);  // Right artwork
-  const spotlight3 = createSpotlight(scene, 0xddddff, 1.0, [-14, 6, -8]); // Left wall painting
-  const spotlight4 = createSpotlight(scene, 0xddddff, 1.0, [14, 6, -8]);  // Right wall painting
+  // Artwork-focused spotlights with warmer tones
+  const spotlight1 = createSpotlight(scene, 0xffeedd, 1.5, [-5, 8, -10]);
+  const spotlight2 = createSpotlight(scene, 0xffeedd, 1.5, [5, 8, -10]);
+  const spotlight3 = createSpotlight(scene, 0xffeedd, 1.5, [-14, 6, -8]);
+  const spotlight4 = createSpotlight(scene, 0xffeedd, 1.5, [14, 6, -8]);
   
-  scene.add(spotlight1, spotlight2, spotlight3, spotlight4);
+  // Additional spotlights for new sculptures
+  const spotlight5 = createSpotlight(scene, 0xffeedd, 1.2, [-8, 7, -5]);
+  const spotlight6 = createSpotlight(scene, 0xffeedd, 1.2, [8, 7, -5]);
+  const spotlight7 = createSpotlight(scene, 0xffeedd, 1.0, [0, 6, -7]);
+  const spotlight8 = createSpotlight(scene, 0xffeedd, 1.0, [0, 6, -12]);
+  
+  scene.add(spotlight1, spotlight2, spotlight3, spotlight4, 
+           spotlight5, spotlight6, spotlight7, spotlight8);
   
   // Add subtle fill lights
-  const fillLight1 = new THREE.PointLight(0x5566aa, 0.3, 20);
+  const fillLight1 = new THREE.PointLight(0x5566aa, 0.2, 20);
   fillLight1.position.set(-10, 5, 5);
   scene.add(fillLight1);
   
-  const fillLight2 = new THREE.PointLight(0xaa5566, 0.3, 20);
+  const fillLight2 = new THREE.PointLight(0xaa5566, 0.2, 20);
   fillLight2.position.set(10, 5, 5);
   scene.add(fillLight2);
   
   return { 
-    spotlights: [spotlight1, spotlight2, spotlight3, spotlight4],
+    spotlights: [spotlight1, spotlight2, spotlight3, spotlight4,
+                spotlight5, spotlight6, spotlight7, spotlight8],
     directional
   };
 }
+
+// [Rest of the file remains the same...]
 
 function createSpotlight(scene, color, intensity, position) {
   const light = new THREE.SpotLight(color, intensity, 30, Math.PI/6, 0.2, 1);
