@@ -515,7 +515,7 @@ async function loadArtworks() {
     const paintings = [
       // Left wall
       {
-        position: new THREE.Vector3(-14, 4.6, -8),
+        position: new THREE.Vector3(-14, 4.9, -8),
         rotation: new THREE.Euler(0, Math.PI / 2, 0),
         config: {
           texturePath: "/assets/artworks/a1.jpg",
@@ -529,7 +529,7 @@ async function loadArtworks() {
       },
       // Right wall
       {
-        position: new THREE.Vector3(14, 4.6, -8),
+        position: new THREE.Vector3(14, 4.9, -8),
         rotation: new THREE.Euler(0, -Math.PI / 2, 0),
         config: {
           texturePath: "/assets/artworks/art02.jpg",
@@ -557,7 +557,7 @@ async function loadArtworks() {
       },
       // Back wall - left
       {
-        position: new THREE.Vector3(-6, 4.6, -14.8),
+        position: new THREE.Vector3(-6, 5.2, -14.8),
         rotation: new THREE.Euler(0, 0, 0),
         config: {
           texturePath: "/assets/artworks/a2.jpg",
@@ -571,7 +571,7 @@ async function loadArtworks() {
       },
       // Back wall - right
       {
-        position: new THREE.Vector3(6, 4.6, -14.8),
+        position: new THREE.Vector3(6, 5.2, -14.8),
         rotation: new THREE.Euler(0, 0, 0),
         config: {
           texturePath: "/assets/artworks/art03.jpg",
@@ -608,8 +608,8 @@ async function loadArtworks() {
       },
       // one with freezy hair 
       {
-        position: new THREE.Vector3(7, -1.2, -8.5),
-        scale: new THREE.Vector3(4.3, 4.3, 4.3),
+        position: new THREE.Vector3(5, -0.1, -10),
+        scale: new THREE.Vector3(1.5, 1.5, 1.5),
         modelPath: "/assets/models/bust_of_marcus_aurelius.glb",
         info: {
           title: "Abstract Form",
@@ -620,7 +620,7 @@ async function loadArtworks() {
       // the black-one
       {
         position: new THREE.Vector3(-6, 1.5, -1),
-        scale: new THREE.Vector3(0.2, 0.2, 0.2),
+        scale: new THREE.Vector3(0.3, 0.3, 0.3),
         modelPath: "/assets/models/statue_of_edward_snowden.glb",
         info: {
           title: "Classical Statue",
@@ -629,8 +629,8 @@ async function loadArtworks() {
       },
       // one with long beard
       {
-        position: new THREE.Vector3(7.5, 0.5, -6),
-        scale: new THREE.Vector3(0.3, 0.3, 0.3),
+        position: new THREE.Vector3(6, 0.5, -1),
+        scale: new THREE.Vector3(0.1, 0.1, 0.1),
         modelPath: "/assets/models/figurehead_of_hms_thames_1823_incomplete.glb",
         info: {
           title: "Modern Abstract",
