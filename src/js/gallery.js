@@ -515,7 +515,7 @@ async function loadArtworks() {
     const paintings = [
       // Left wall
       {
-        position: new THREE.Vector3(-14, 1.6, -8),
+        position: new THREE.Vector3(-14, 4.6, -8),
         rotation: new THREE.Euler(0, Math.PI / 2, 0),
         config: {
           texturePath: "/assets/artworks/a1.jpg",
@@ -523,31 +523,45 @@ async function loadArtworks() {
           frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
         },
         info: {
-          title: "Starry Night",
-          description: "Modern interpretation of classic landscape",
-        },
-      },
-      // Right wall
-      {
-        position: new THREE.Vector3(14, 1.6, -8),
-        rotation: new THREE.Euler(0, -Math.PI / 2, 0),
-        config: {
-          texturePath: "/assets/artworks/a1.jpg",
-          size: { width: 3, height: 4 },
-          frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
-        },
-        info: {
           title: "Abstract Thoughts",
           description: "Expressionist oil painting from 2023",
         },
       },
+      // Right wall
+      {
+        position: new THREE.Vector3(14, 4.6, -8),
+        rotation: new THREE.Euler(0, -Math.PI / 2, 0),
+        config: {
+          texturePath: "/assets/artworks/art02.jpg",
+          size: { width: 3, height: 4 },
+          frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
+        },
+        info: {
+          title:"Contours of Thought",
+          description:"Rendered solely in pencil, this study of Socrates captures the philosopher’s contemplative gaze and timeless presence—stripped of color, yet rich in depth and wisdom."
+        },
+      },
       // Back wall - center
       {
-        position: new THREE.Vector3(0, 1.6, -14.8),
+        position: new THREE.Vector3(0, 5.8, -14.8),
+        rotation: new THREE.Euler(0, 0, 0),
+        config: {
+          texturePath: "/assets/artworks/images.jpg",
+          size: { width: 5, height: 3 },
+          frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
+        },
+        info: {
+          title: "Dusk Over Fields",
+          description: "A warm countryside sunset bathes open fields in amber light, capturing nature’s quiet farewell to the day.",
+        },
+      },
+      // Back wall - left
+      {
+        position: new THREE.Vector3(-6, 4.6, -14.8),
         rotation: new THREE.Euler(0, 0, 0),
         config: {
           texturePath: "/assets/artworks/a2.jpg",
-          size: { width: 5, height: 3 },
+          size: { width: 3, height: 4 },
           frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
         },
         info: {
@@ -555,32 +569,18 @@ async function loadArtworks() {
           description: "Afewerk Tekle, 1959 (Expressionism)",
         },
       },
-      // Back wall - left
-      {
-        position: new THREE.Vector3(-6, 1.6, -14.8),
-        rotation: new THREE.Euler(0, 0, 0),
-        config: {
-          texturePath: "/assets/artworks/a3.jpg",
-          size: { width: 3, height: 4 },
-          frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
-        },
-        info: {
-          title: "Portrait Study",
-          description: "Charcoal on paper, 2021",
-        },
-      },
       // Back wall - right
       {
-        position: new THREE.Vector3(6, 1.6, -14.8),
+        position: new THREE.Vector3(6, 4.6, -14.8),
         rotation: new THREE.Euler(0, 0, 0),
         config: {
-          texturePath: "/assets/artworks/a4.jpg",
+          texturePath: "/assets/artworks/art03.jpg",
           size: { width: 3, height: 4 },
           frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
         },
         info: {
-          title: "Urban Landscape",
-          description: "Acrylic on canvas, 2020",
+          title: "Convergence of Intention",
+          description: "Two abstracted hands extend toward one another—suspended in a moment where touch is imminent but unrealized, capturing the tension between desire and distance.",
         },
       },
     ];
@@ -598,26 +598,28 @@ async function loadArtworks() {
     const sculptures = [
       // Original sculptures
       {
-        position: new THREE.Vector3(-5, 1, -10),
-        scale: new THREE.Vector3(0.5, 0.5, 0.5),
-        modelPath: "/assets/models/misaka_mikoto_preview.glb",
+        position: new THREE.Vector3(-5, 0.5, -10),
+        scale: new THREE.Vector3(1.5, 1.5, 1.5),
+        modelPath: "/assets/models/aphrodite_crouching_british_museum.glb",
         info: {
           title: "Modern Figure",
           description: "Bronze sculpture by contemporary artist",
         },
       },
+      // one with freezy hair 
       {
-        position: new THREE.Vector3(5, 1, -10),
-        scale: new THREE.Vector3(0.7, 0.7, 0.7),
-        modelPath: "/assets/models/mazda_vision_rs__www.vecarz.com.glb",
+        position: new THREE.Vector3(7, -1.2, -8.5),
+        scale: new THREE.Vector3(4.3, 4.3, 4.3),
+        modelPath: "/assets/models/bust_of_marcus_aurelius.glb",
         info: {
           title: "Abstract Form",
           description: "Marble abstract piece from 2022",
         },
       },
       // New sculptures
+      // the black-one
       {
-        position: new THREE.Vector3(-6, 1.5, -5),
+        position: new THREE.Vector3(-6, 1.5, -1),
         scale: new THREE.Vector3(0.2, 0.2, 0.2),
         modelPath: "/assets/models/statue_of_edward_snowden.glb",
         info: {
@@ -625,26 +627,18 @@ async function loadArtworks() {
           description: "Neoclassical marble sculpture, 19th century",
         },
       },
+      // one with long beard
       {
-        position: new THREE.Vector3(8, 1.2, -5),
-        scale: new THREE.Vector3(0.2, 0.2, 0.2),
-        modelPath: "/assets/models/snowden.glb",
+        position: new THREE.Vector3(7.5, 0.5, -6),
+        scale: new THREE.Vector3(0.3, 0.3, 0.3),
+        modelPath: "/assets/models/figurehead_of_hms_thames_1823_incomplete.glb",
         info: {
           title: "Modern Abstract",
           description: "Contemporary steel sculpture, 2021",
         },
       },
       {
-        position: new THREE.Vector3(0, 1, -7),
-        scale: new THREE.Vector3(0.5, 0.5, 0.5),
-        modelPath: "/assets/models/african_statue.glb",
-        info: {
-          title: "African Statue",
-          description: "Traditional wooden carving",
-        },
-      },
-      {
-        position: new THREE.Vector3(0, 1.2, -12),
+        position: new THREE.Vector3(0, 0.2, -12),
         scale: new THREE.Vector3(0.1, 0.1, 0.1),
         modelPath: "/assets/models/sylvanus.glb",
         info: {
