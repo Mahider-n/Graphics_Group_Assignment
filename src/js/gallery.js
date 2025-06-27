@@ -586,7 +586,7 @@ async function loadArtworks() {
 
       // additonal art work
       {
-      position: new THREE.Vector3(-10, 5, 5),
+      position: new THREE.Vector3(-14, 4.9, -3),
       rotation: new THREE.Euler(0, Math.PI / 2, 0),
       config: {
         texturePath: "/assets/artworks/art_07.jpg",
