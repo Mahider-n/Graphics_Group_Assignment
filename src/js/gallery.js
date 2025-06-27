@@ -584,7 +584,7 @@ async function loadArtworks() {
         },
       },
 
-      // additonal art work
+      // additonal art work- on left wall
       {
       position: new THREE.Vector3(-14, 4.9, -3),
       rotation: new THREE.Euler(0, Math.PI / 2, 0),
@@ -596,6 +596,20 @@ async function loadArtworks() {
       info: {
         title: "Elegance of Tradition",
         description: "A vibrant painting that captures the rich cultural heritage of Ethiopia.",
+      },
+    },
+
+    {
+      position: new THREE.Vector3(-14, 4.9, 2),
+      rotation: new THREE.Euler(0, Math.PI / 2, 0),
+      config: {
+        texturePath: "/assets/artworks/art_08.jpg",
+        size: { width: 3, height: 4 },
+        frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
+      },
+      info: {
+        title: "Jebena Buna",
+        description: "A captivating painting depicting the time-honored Ethiopian coffee ceremony.",
       },
     },
 
