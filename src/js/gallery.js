@@ -583,6 +583,22 @@ async function loadArtworks() {
           description: "Two abstracted hands extend toward one another—suspended in a moment where touch is imminent but unrealized, capturing the tension between desire and distance.",
         },
       },
+
+      // additonal art work
+      {
+      position: new THREE.Vector3(-10, 5, 5),
+      rotation: new THREE.Euler(0, Math.PI / 2, 0),
+      config: {
+        texturePath: "/assets/artworks/art_07.jpg",
+        size: { width: 3, height: 4 },
+        frame: { thickness: 0.2, depth: 0.1, color: 0x8b4513 },
+      },
+      info: {
+        title: "Elegance of Tradition",
+        description: "A vibrant painting that captures the rich cultural heritage of Ethiopia.",
+      },
+    },
+
     ];
 
     for (const painting of paintings) {
